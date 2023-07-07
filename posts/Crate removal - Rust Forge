@@ -1,0 +1,31 @@
+当我们收到DMCA下架通知时，需要发生以下事情：
+
+在删除包裹之前，联系法律支持，目前通常通过电子邮件向核心团队发送询问，询问他们对收到的请求的看法以及我们是否必须遵守。
+
+然后，从数据库中删除它：
+
+heroku run -a crates-io -- target/release/crates-admin delete-crate [crate-name] 
+
+或者 
+
+heroku run -a crates-io -- target/release/crates-admin delete-version [crate-name] [version-number]。
+
+接下来，从索引中删除包或版本。要删除整个包裹，删除整个包裹文件。对于版本来说，删除与相关版本对应的行。
+
+然后，从S3中删除包裹归档和readme文件。
+
+再然后，使CloudFront缓存无效：
+
+aws cloudfront create-invalidation --distribution-id EJED5RT0WA7HA --paths '/*'。
+
+docs.rs应用支持删除一个包裹的所有文档，通过运行CLI命令即可实现。目前有权限访问服务器并运行它的人包括：
+
+docs.rs团队：
+
+基础设施团队：
+
+拥有提高1password访问权限的人。
+
+你可以在这里找到如何运行命令的文档。
+
+段落总结：这段文字详细说明了在接收到DMCA下架通知时，应该如何响应和执行一系列进行删除的操作。同时也给出了哪些团队和人员拥有执行这些操作的权限，并提供了如何运行命令的说明文档。
